@@ -1,0 +1,103 @@
+services:
+  reactapp:
+    build:
+      context: ./front
+      args:
+        - MY_UID=${MY_UID}
+        - MY_GID=${MY_GID}
+        - PORT_VITE=${PORT_VITE}
+    env_file:
+      - .env
+    networks:
+      - hackathon_summer_network
+    volumes:
+      - ./front:/home/appuser/devcon
+    # ports:
+    #   - ${PORT_VITE}:${PORT_VITE}
+    expose:
+      - ${PORT_VITE}
+    command: ["/bin/bash", "-c", "/home/appuser/devcon/build.sh"]
+
+  nginx:
+    build:
+      context: ./nginx
+      args:
+        - MY_UID=${MY_UID}
+        - MY_GID=${MY_GID}      
+        - VITE_REACT_APP_IS_BUILD_IMAGE=${VITE_REACT_APP_IS_BUILD_IMAGE}
+    env_file:
+      - .env    
+    restart: always
+    depends_on:
+      - reactapp
+    volumes:
+      - ./nginx/docker-entrypoint.sh:/docker-entrypoint.sh
+      - ./nginx/nginx.conf.dev:/etc/nginx/nginx.conf.dev
+      - ./nginx/nginx.conf.prod:/etc/nginx/nginx.conf.prod
+      - ./nginx/html:/usr/share/nginx/html
+      - ./nginx/log:/var/log/nginx
+    networks:
+      - hackathon_summer_network
+    ports:
+      - 80:80
+
+  fastapi:
+    build:
+      context: ./back/apis
+      args:
+        - MY_UID=${MY_UID}
+        - MY_GID=${MY_GID}
+        - PORT_FAST=${PORT_FAST}
+    volumes:
+      - ./back:/home/appuser/devcon
+    env_file:
+      - .env
+    networks:
+      - hackathon_summer_network
+    ports:
+      - ${PORT_FAST}:${PORT_FAST}
+    # expose:
+    #   - ${PORT_FAST}
+    command: ["/bin/sh", "-c", "/home/appuser/devcon/build.sh"]
+
+  mysql_fast:
+    build:
+      context: ./back//mysql
+      args:
+        - PORT_MYSQL_FAST=${PORT_MYSQL_FAST}
+        - MYSQL_USER=${MYSQL_USER}
+    volumes:
+      - ./back/mysql/data/db:/var/lib/mysql/${MYSQL_DB_FAST}
+    environment:
+      - TZ=Asia/Tokyo
+    env_file:
+      - .env
+    networks:
+      - hackathon_summer_network
+    # ports:
+    #   - ${PORT_MYSQL_FAST}:${PORT_MYSQL_FAST}
+    expose:
+      - ${PORT_MYSQL_FAST}
+
+  pma_fast:
+    build:
+      context: ./back/phpmyadmin
+      args:
+        PORT_PMA_FAST: ${PORT_PMA_FAST}
+    env_file:
+      - .env
+    networks:
+      - hackathon_summer_network
+    environment:
+      PMA_HOST: ${MYSQL_HOST_FAST}
+      PMA_PORT: ${PORT_MYSQL_FAST}
+    # expose:
+    #   - ${PORT_PMA_FAST}
+    ports:
+      - ${PORT_PMA_FAST}:${PORT_PMA_FAST}
+    volumes:
+      - ./back/phpmyadmin/sessions:/sessions
+
+networks:
+  hackathon_summer_network:
+    name: hackathon_summer_network
