@@ -1,6 +1,10 @@
 name: Check Submodules
 on:
+  push:
+    branches: [ develop ]
   pull_request:
+    branches: [ develop ]
+  workflow_dispatch:
 jobs:
   check-submodules:
     runs-on: ubuntu-latest
