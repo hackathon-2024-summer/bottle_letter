@@ -1,0 +1,19 @@
+name: Check Submodules
+on:
+  pull_request:
+jobs:
+  check-submodules:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: 'recursive'
+    - name: Check submodule back
+      run: |
+        git submodule status back | grep -q '^-' && (echo "Error: back was not updated" && exit 1) || echo "back was updated"
+    - name: Check submodule front  
+      run: |  
+        git submodule status front | grep -q '^-' && (echo "Error: front was not updated" && exit 1) || echo "front was updated"        
+    - name: Fail if any submodule was not updated
+      if: failure()
+      run: exit 1
