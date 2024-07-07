@@ -7,6 +7,9 @@ export $(xargs < .env)
 REACT_APP_DIR="./front/react-app"
 NGINX_HTML_DIR="./nginx/html"
 
+# NGINX_HTML_DIRの所有者とグループを変更
+echo "Changing ownership of Nginx html directory..."
+sudo chown -R $MY_UID:$MY_GID $NGINX_HTML_DIR
 
 # ビルド成果物のコピー
 echo "Copying build artifacts to Nginx html directory..."
