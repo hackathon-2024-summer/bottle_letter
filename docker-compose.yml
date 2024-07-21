@@ -11,12 +11,13 @@ services:
     networks:
       - hackathon_summer_network
     volumes:
-      - ./front:/home/appuser/devcon
+      - .:/home/appuser
+      - ./front:/home/appuser/front
     # ports:
     #   - ${PORT_VITE}:${PORT_VITE}
     expose:
       - ${PORT_VITE}
-    command: ["/bin/bash", "-c", "/home/appuser/devcon/build.sh"]
+    command: ["/bin/bash", "-c", "/home/appuser/front/build.sh"]
 
   nginx:
     build:
@@ -49,7 +50,8 @@ services:
         - MY_GID=${MY_GID}
         - PORT_FAST=${PORT_FAST}
     volumes:
-      - ./back:/home/appuser/devcon
+      - .:/home/appuser
+      - ./back:/home/appuser/back
     env_file:
       - .env
     networks:
@@ -58,7 +60,7 @@ services:
       - ${PORT_FAST}:${PORT_FAST}
     # expose:
     #   - ${PORT_FAST}
-    command: ["/bin/sh", "-c", "/home/appuser/devcon/build.sh"]
+    command: ["/bin/sh", "-c", "/home/appuser/back/build.sh"]
 
   mysql_fast:
     build:
