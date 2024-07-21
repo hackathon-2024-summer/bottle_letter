@@ -1,3 +1,14 @@
 .env
 /nginx/log
 /nginx/html
+.gitconfig
+.cache
+.dotnet
+.gnupg
+.ssh
+.vscode-server
+.devcontainer
+.zsh*
+.zcompdump*
+.bash_history
+.oh-my-zsh
