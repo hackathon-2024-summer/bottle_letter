@@ -1,4 +1,14 @@
-# Reactのrun buildで生成される静的イメージをnginxコンテナにdocker-compose.ymlで一括で送り込むことはできない
+#
+
+## サブモジュールを持つリポジトリの更新
+
+GitHubにpushする前にサブモジュールの更新とマージを完了させ
+
+- git checkout develop
+- git fetch --prune --recurse-submodules
+- git submodule update --remote --merge
+
+## Reactのrun buildで生成される静的イメージをnginxコンテナにdocker-compose.ymlで一括で送り込むことはできない
 
 - reactのdistフォルダに静的イメージができるまでの時間が長く、docker-compose.ymでそれを待って、permissionエラーを回避しながらnginxコンテナを起動させようとするとdocker-compose.yml、関連するDockerfile、シェルスクリプトが大変複雑になる。
 - frontを run dev / run buildの切り替えは環境変数　VITE_REACT_APP_IS_BUILD_IMAGE　で切り替える。Falseは run dev。Trueはrun build。
